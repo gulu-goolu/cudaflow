@@ -1,0 +1,15 @@
+services:
+  develop:
+    image: cudaflow:develop
+    command: ["/usr/bin/tail", "-f", "/dev/null"]
+    volumes:
+      - "./:/root/cudaflow"
+    working_dir: /root/cudaflow
+    privileged: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

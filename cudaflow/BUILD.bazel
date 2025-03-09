@@ -1,0 +1,13 @@
+cc_library(
+    name = "cudaflow",
+    srcs = glob(["*.cc"]),
+    hdrs = glob(["*.h"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@abseil-cpp//absl/random",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+        "@concurrentqueue",
+        "@local_cuda//:cuda_headers",
+    ],
+)

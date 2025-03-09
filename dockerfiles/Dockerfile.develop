@@ -1,0 +1,14 @@
+FROM nvidia/cuda:12.8.0-cudnn-devel-ubuntu22.04
+
+RUN apt-get update && apt-get install -y software-properties-common bison git autoconf git-lfs
+
+# 安装 clang
+ARG CLANG_VERSION=18
+RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh ${CLANG_VERSION} all
+ENV CC=clang-${CLANG_VERSION} CXX=clang++-${CLANG_VERSION}
+
+# 安装 bazel 相关的工具
+ADD install-bazel.sh /
+RUN bash install-bazel.sh
+
+RUN apt-get install -y fish && chsh -s /usr/bin/fish

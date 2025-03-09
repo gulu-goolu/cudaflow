@@ -1,0 +1,42 @@
+load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
+load("@rules_cuda//cuda:defs.bzl", "cuda_library")
+
+# 代码补全
+refresh_compile_commands(
+    name = "refresh_compile_commands",
+    targets = {
+        "//test/...": "",
+        "//cudaflow/...": "",
+    },
+)
+
+cc_test(
+    name = "random_test",
+    srcs = ["random_test.cc"],
+    deps = ["@abseil-cpp//absl/random"],
+)
+
+cc_test(
+    name = "concurrentqueue_test",
+    srcs = ["concurrentqueue_test.cc"],
+    deps = [
+        "@concurrentqueue",
+        "@gflags",
+    ],
+)
+
+cc_test(
+    name = "allocator_test",
+    srcs = ["allocator_test.cc"],
+    linkstatic = True,
+    deps = [
+        ":test_kernel_cu",
+        "//cudaflow",
+        "@gflags",
+    ],
+)
+
+cuda_library(
+    name = "test_kernel_cu",
+    srcs = ["test_kernel.cu"],
+)

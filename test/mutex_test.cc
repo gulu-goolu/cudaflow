@@ -1,8 +1,7 @@
-#include "cudaflow/allocator.h"
-
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -11,15 +10,13 @@
 DEFINE_int32(num_thread, 4, "");
 DEFINE_int32(repeats, 10000, "");
 
-void thread_fn(cudaflow::IAllocator* allocator, int32_t repeats) {
+void thread_fn(std::mutex* allocator, int32_t repeats) {
   for (int32_t i = 0; i < repeats; ++i) {
-    auto mem = allocator->allocate(1024L).value();
-
-    allocator->deallocate(mem);
+    std::lock_guard<std::mutex> lck(*allocator);
   }
 }
 
-void run_test(cudaflow::IAllocator* allocator, int32_t num_thread, int32_t repeats) {
+void run_test(std::mutex* allocator, int32_t num_thread, int32_t repeats) {
   auto tp0 = std::chrono::steady_clock::now();
 
   std::vector<std::thread> threads;
@@ -41,6 +38,6 @@ void run_test(cudaflow::IAllocator* allocator, int32_t num_thread, int32_t repea
 int main(int argc, char* argv[]) {
   ::gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  auto allocator = cudaflow::IAllocator::create_device_allocator(0);
-  run_test(allocator.get(), FLAGS_num_thread, FLAGS_repeats);
+  std::mutex mtx;
+  run_test(&mtx, FLAGS_num_thread, FLAGS_repeats);
 }

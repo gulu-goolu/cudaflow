@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "absl/status/statusor.h"
+#include "cuda_runtime_api.h"
 
 namespace cudaflow {
 
@@ -37,3 +38,10 @@ class IAllocator : public std::enable_shared_from_this<IAllocator> {
 };
 
 }  // namespace cudaflow
+
+typedef struct _THCDeviceAllocator {
+  cudaError_t (*malloc)(void*, void**, size_t, cudaStream_t);
+  cudaError_t (*free)(void*, void*);
+  cudaError_t (*shutdown)(void*);
+  void* state;
+} THCDeviceAllocator;
